@@ -3,3 +3,6 @@
 
 # 로컬 미리보기 설정 (개인 환경)
 .claude/launch.json
+
+# 캡처 도구의 설치 파일
+tools/node_modules/
