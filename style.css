@@ -144,3 +144,15 @@ button { cursor: pointer; }
 .err { color: var(--accent); font-size: 14px; margin: -8px 0 12px; }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* 본인 인증(데모)과 지역 */
+.demo { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 999px; background: var(--ink); color: var(--paper); font-size: 12px; font-weight: 700; vertical-align: middle; }
+.steps { list-style: none; padding: 0; margin: 0 0 16px; display: grid; gap: 8px; }
+.steps li { display: grid; grid-template-columns: 28px 1fr; gap: 10px; align-items: center; padding: 12px 14px; background: var(--card); border: 1.5px solid var(--line); border-radius: 12px; }
+.steps .n { font-family: var(--font-title); font-weight: 800; color: var(--accent); }
+.steps b { display: block; line-height: 1.35; }
+.steps small { display: block; color: var(--ink-2); font-size: 13px; line-height: 1.4; }
+.linkbtn.center { display: block; margin: 14px auto 0; }
+.scope { font-size: 14px; color: var(--ink-2); margin-bottom: 12px; }
+.scope b { color: var(--ink); }
+.chip.ok::before { content: "\2713  "; color: var(--ok); font-weight: 700; }

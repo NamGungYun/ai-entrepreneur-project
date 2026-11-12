@@ -7,8 +7,12 @@ const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const app = document.getElementById("app");
 const toastEl = document.getElementById("toast");
 
+const REGIONS = ["동대문구", "중랑구", "노원구", "성북구", "강남구"];
 const state = {
   nick: readNick(),
+  region: readRegion(),      // 본인 지역. 이 지역의 방만 보이고 열 수 있다.
+  verified: readVerified(),  // 본인 인증(데모)을 마쳤는지
+  intent: "list",
   view: "list",        // gate | list | create | room
   day: "today",        // today | tomorrow
   rooms: [],
@@ -25,6 +29,21 @@ function readNick() {
   const fromUrl = (new URLSearchParams(location.search).get("nick") || "").trim().slice(0, 12);
   if (fromUrl) return fromUrl;
   try { return localStorage.getItem("honbap.nick") || ""; } catch { return ""; }
+}
+function readRegion() {
+  const fromUrl = new URLSearchParams(location.search).get("region");
+  if (REGIONS.includes(fromUrl)) return fromUrl;
+  try { const v = localStorage.getItem("honbap.region"); return REGIONS.includes(v) ? v : ""; } catch { return ""; }
+}
+function readVerified() {
+  if (new URLSearchParams(location.search).get("verified") === "1") return true;
+  try { return localStorage.getItem("honbap.verified") === "1"; } catch { return false; }
+}
+function saveProfile() {
+  try {
+    localStorage.setItem("honbap.region", state.region);
+    localStorage.setItem("honbap.verified", state.verified ? "1" : "0");
+  } catch { /* 저장이 막혀도 계속 쓴다 */ }
 }
 function saveNick(n) {
   try { localStorage.setItem("honbap.nick", n); } catch { /* 저장이 막혀도 계속 쓴다 */ }
@@ -72,6 +91,7 @@ async function loadRooms() {
   const from = new Date(); from.setHours(0, 0, 0, 0);
   const to = dayOf(2); to.setHours(0, 0, 0, 0);
   const { data: rooms, error } = await db.from("rooms").select("*")
+    .eq("region", state.region)
     .gte("meet_at", from.toISOString()).lt("meet_at", to.toISOString())
     .order("meet_at", { ascending: true });
   if (error) { toast("방 목록을 불러오지 못했어요. 잠시 뒤 다시 시도해 주세요."); return; }
@@ -124,7 +144,7 @@ async function onRoomsChanged() {
 
 // ---------- 동작 ----------
 async function joinRoom(roomId) {
-  const { error } = await db.from("members").insert({ room_id: roomId, nickname: state.nick });
+  const { error } = await db.from("members").insert({ room_id: roomId, nickname: state.nick, verified: state.verified });
   if (error) {
     if (String(error.message).includes("ROOM_FULL")) toast("방금 정원이 찼어요.");
     else if (error.code === "23505") toast("이미 참여한 방이에요.");
@@ -164,7 +184,8 @@ function go(view, extra = {}) {
   window.scrollTo(0, 0);
 }
 function render() {
-  if (!state.nick) return renderGate();
+  if (!state.nick || !state.region) return renderGate();
+  if (!state.verified) return renderVerify();
   if (state.view === "create") return renderCreate();
   if (state.view === "room") return renderRoom();
   renderList();
@@ -174,7 +195,7 @@ function renderGate() {
   let err;
   let intent = "list";
   const feats = [
-    ["list", "밥약 방 참여하기", "오늘·내일 열린 방에 버튼 한 번으로"],
+    ["list", "밥약 방 참여하기", "내 지역에 열린 방에 버튼 한 번으로"],
     ["create", "밥약 방 열기", "시간·식당·메뉴·정원을 정해서"],
     ["list", "방 안에서 채팅하기", "만날 곳과 시간을 실시간으로 조율"],
   ];
@@ -188,22 +209,31 @@ function renderGate() {
     },
   }, el("span", { class: "n" }, String(i + 1)), el("span", {}, el("b", {}, title), el("small", {}, sub))));
   const nick = el("input", { type: "text", maxlength: "12", autocomplete: "nickname", placeholder: "예: 점심메이트", required: true });
+  const region = el("select", { required: true },
+    el("option", { value: "" }, "내 지역 고르기"),
+    REGIONS.map((g) => el("option", { value: g }, "서울 " + g)));
+  // 행사장이 동대문구라 기본값으로 둔다. QR로 들어온 사람이 같은 지역의 방을 바로 보게 하려는 것이다.
+  region.value = state.region || "동대문구";
   const adult = el("input", { type: "checkbox", required: true });
   const form = el("form", {
     onsubmit: (e) => {
       e.preventDefault();
       const n = nick.value.trim();
       if (!n) { err.textContent = "닉네임을 입력해 주세요."; return; }
+      if (!region.value) { err.textContent = "내 지역을 골라 주세요. 그 지역의 밥약만 보여 드려요."; return; }
       if (!adult.checked) { err.textContent = "만 19세 이상 확인에 체크해 주세요."; return; }
       state.nick = n; saveNick(n);
+      state.region = region.value; saveProfile();
+      state.intent = intent;
       state.view = intent;
       start();
     },
   },
     el("label", { class: "field" }, el("span", {}, "닉네임"), nick),
+    el("label", { class: "field" }, el("span", {}, "내 지역 (이 지역의 밥약만 보여요)"), region),
     el("label", { class: "check" }, adult, el("span", {}, "만 19세 이상이며, 공개된 식당에서만 만나겠습니다.")),
     (err = el("p", { class: "err", role: "alert" })),
-    el("button", { class: "btn", type: "submit" }, "밥약 보러 가기"),
+    el("button", { class: "btn", type: "submit" }, "다음: 본인 인증"),
   );
   app.replaceChildren(el("section", { class: "gate" },
     el("p", { class: "mark" }, "혼밥 탈출"),
@@ -211,8 +241,34 @@ function renderGate() {
     el("p", { class: "lead" }, "혼자 밥 먹기 외로운 사람을 위한 밥약 서비스예요. 언제, 어디서, 무엇을 먹을지 정한 방에 바로 참여하세요."),
     el("div", { class: "feats" }, featBtns),
     form,
-    el("p", { class: "proto" }, "수업용 시제품 · 목록의 '가상 사용자' 방은 예시 데이터입니다"),
+    el("p", { class: "proto" }, "수업용 시제품 · '가상 사용자' 방은 예시 데이터 · 본인 인증은 데모입니다"),
   ));
+}
+
+// 본인 인증 화면. 오늘은 데모다: 실제 얼굴 사진이나 신분증은 받지도 저장하지도 않는다.
+function renderVerify() {
+  const steps = [
+    ["신분증으로 본인 확인", "이름과 생년월일이 맞는지, 성인인지 확인해요"],
+    ["얼굴 대조", "신분증 사진과 지금 얼굴이 같은 사람인지 확인해요"],
+    ["지역 확인", `서울 ${state.region}에서만 방을 보고 열 수 있어요`],
+  ];
+  app.replaceChildren(el("section", { class: "gate verify" },
+    el("p", { class: "mark" }, "본인 인증 ", el("span", { class: "demo" }, "데모")),
+    el("h1", {}, "인증한 사람만", el("br"), el("em", {}, "밥약"), "에 나와요"),
+    el("p", { class: "lead" }, "누구인지 확인된 같은 동네 사람끼리, 밥만 편하게 먹고 헤어지는 자리를 만들어요."),
+    el("ol", { class: "steps" }, steps.map(([t, d], i) => el("li", {},
+      el("span", { class: "n" }, String(i + 1)), el("span", {}, el("b", {}, t), el("small", {}, d))))),
+    el("p", { class: "notice" }, el("strong", {}, "데모 화면이에요. "),
+      "수업용 시제품이라 실제 얼굴 사진과 신분증은 받지도 저장하지도 않아요. 아래 버튼을 누르면 인증한 것으로 표시돼요."),
+    el("button", { class: "btn", type: "button", onclick: () => {
+      state.verified = true; saveProfile();
+      toast("인증됐어요 (데모).");
+      state.view = state.intent || "list";
+      start();
+    } }, "데모 인증 완료하기"),
+    el("button", { class: "linkbtn center", type: "button", onclick: () => { state.nick = ""; saveNick(""); render(); } }, "닉네임과 지역 다시 고르기"),
+  ));
+  window.scrollTo(0, 0);
 }
 
 function topBar() {
@@ -220,8 +276,8 @@ function topBar() {
     el("div", { class: "brand" }, "혼밥 ", el("em", {}, "탈출")),
     el("button", {
       class: "me", type: "button", "aria-label": "닉네임 바꾸기",
-      onclick: () => { state.nick = ""; saveNick(""); render(); },
-    }, state.nick + " · 바꾸기"),
+      onclick: () => { state.nick = ""; state.verified = false; saveNick(""); saveProfile(); render(); },
+    }, `${state.nick} · ${state.region} · 바꾸기`),
   );
 }
 
@@ -232,6 +288,7 @@ function renderList() {
   }, label);
   app.replaceChildren(
     topBar(),
+    el("p", { class: "scope" }, el("b", {}, "서울 " + state.region), "에서 열린 밥약만 보여요. 참여자는 본인 인증을 거쳐요."),
     el("div", { class: "tabs", role: "tablist" }, tab("today", "오늘"), tab("tomorrow", "내일")),
     el("div", { id: "listBody" }),
     el("button", { class: "btn fab", type: "button", onclick: () => go("create") }, "+ 밥약 방 열기"),
@@ -290,10 +347,10 @@ function renderCreate() {
       submit.disabled = true;
       const { data: room, error } = await db.from("rooms").insert({
         menu: menu.value.trim(), place: place.value.trim(), meet_at: d.toISOString(),
-        capacity: Number(cap.value), host: state.nick,
+        capacity: Number(cap.value), host: state.nick, region: state.region,
       }).select().single();
       if (error) { submit.disabled = false; err.textContent = "방을 열지 못했어요. 다시 시도해 주세요."; return; }
-      await db.from("members").insert({ room_id: room.id, nickname: state.nick });
+      await db.from("members").insert({ room_id: room.id, nickname: state.nick, verified: state.verified });
       await loadRooms();
       openRoom(room.id);
     },
@@ -309,7 +366,7 @@ function renderCreate() {
   );
   app.replaceChildren(
     el("header", { class: "top" }, el("button", { class: "back", type: "button", onclick: () => go("list") }, "← 목록")),
-    el("section", { class: "detail" }, el("h2", {}, "밥약 방 열기"), el("p", { class: "meta" }, "공개된 식당 이름을 적어 주세요.")),
+    el("section", { class: "detail" }, el("h2", {}, "밥약 방 열기"), el("p", { class: "meta" }, `서울 ${state.region}의 공개된 식당 이름을 적어 주세요. 내 지역에서만 방을 열 수 있어요.`)),
     form,
   );
   menu.focus();
@@ -360,11 +417,14 @@ function renderRoomHead() {
     : el("button", { class: "btn", type: "button", disabled: full, onclick: () => joinRoom(r.id) }, full ? "마감됐어요" : "참여하기");
   head.replaceChildren(
     el("h2", {}, r.menu),
-    el("p", { class: "meta" }, `${dayLabel(r.meet_at)} ${hhmm(r.meet_at)} · ${r.place} · ${ms.length}/${r.capacity}명`),
-    el("div", { class: "people" }, ms.map((m) => el("span", { class: "chip" + (m.nickname === r.host ? " host" : "") }, m.nickname))),
+    el("p", { class: "meta" }, `${dayLabel(r.meet_at)} ${hhmm(r.meet_at)} · ${r.region} ${r.place} · ${ms.length}/${r.capacity}명`),
+    el("div", { class: "people" }, ms.map((m) => el("span", {
+      class: "chip" + (m.nickname === r.host ? " host" : "") + (m.verified ? " ok" : ""),
+      title: m.verified ? "본인 인증(데모)을 마친 참여자" : "인증하지 않은 참여자",
+    }, m.nickname))),
     el("div", { class: "actions" }, main,
       el("a", { class: "btn ghost", href: mapUrl(r.place), target: "_blank", rel: "noopener" }, "지도 보기")),
-    el("p", { class: "notice" }, el("strong", {}, "안전하게 만나요. "), "공개된 식당에서만 만나고, 불편한 일이 있으면 바로 신고해 주세요. ",
+    el("p", { class: "notice" }, el("strong", {}, "밥만 먹고 헤어지는 자리예요. "), "공개된 식당에서 만나고, 연락처나 다음 약속을 요구하지 않아요. 불편한 일이 있으면 바로 신고해 주세요. ",
       el("button", { class: "linkbtn", type: "button", onclick: () => reportRoom(r.id) }, "이 방 신고하기")),
   );
   const input = document.getElementById("msgInput");
