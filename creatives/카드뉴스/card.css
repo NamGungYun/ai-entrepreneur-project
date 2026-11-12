@@ -1,0 +1,58 @@
+:root {
+  --tomato: #E4572E;
+  --bowl: #FBF6EC;
+  --ink: #221C16;
+  --line: #E6DCCB;
+  --muted: #6B6157;
+  --tomato-soft: #FCE9E1;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  width: 1080px; height: 1350px; margin: 0; overflow: hidden;
+  background: var(--bowl); color: var(--ink);
+  font-family: "IBM Plex Sans KR", sans-serif;
+  word-break: keep-all;
+}
+body.story { height: 1920px; }
+.card {
+  width: 100%; height: 100%; padding: 96px;
+  display: flex; flex-direction: column;
+}
+.top { display: flex; justify-content: space-between; align-items: center; }
+.wordmark { font-family: "Paperlogy", sans-serif; font-weight: 800; font-size: 44px; letter-spacing: -0.02em; }
+.wordmark b, .title b { color: var(--tomato); font-weight: inherit; }
+.label {
+  font-size: 26px; font-weight: 600; color: var(--muted);
+  border: 2px solid var(--line); border-radius: 999px; padding: 10px 24px; background: #fff;
+}
+.main { flex: 1; display: flex; flex-direction: column; justify-content: center; min-height: 0; }
+.kicker { font-family: "Paperlogy", sans-serif; font-weight: 700; font-size: 34px; color: var(--tomato); margin-bottom: 36px; }
+.title {
+  font-family: "Paperlogy", sans-serif; font-weight: 900;
+  font-size: 128px; line-height: 1.3; letter-spacing: -0.03em;
+}
+.body { font-size: 48px; line-height: 1.6; font-weight: 500; margin-top: 56px; max-width: 800px; }
+.bottom { display: flex; justify-content: space-between; align-items: center; }
+.dots { display: flex; gap: 14px; }
+.dots i { width: 30px; height: 30px; border-radius: 50%; border: 3px solid var(--ink); display: block; }
+.dots i.on { background: var(--tomato); border-color: var(--tomato); }
+.page { font-family: "Paperlogy", sans-serif; font-weight: 700; font-size: 30px; color: var(--muted); }
+
+/* 04 사용 장면 */
+.split { flex: 1; display: flex; align-items: center; gap: 56px; min-height: 0; }
+.split .text { flex: 1; }
+.split .title { font-size: 84px; }
+.split .body { font-size: 38px; margin-top: 40px; }
+.phone {
+  flex: none; width: 440px; border: 10px solid var(--ink); border-radius: 52px;
+  overflow: hidden; background: var(--bowl);
+}
+.phone img { display: block; width: 100%; }
+
+/* 06 행동 유도 */
+.cta { display: flex; align-items: center; gap: 48px; margin-top: 64px; }
+.qr { flex: none; width: 300px; height: 300px; background: #fff; border: 2px solid var(--line); border-radius: 32px; padding: 22px; }
+.qr img { display: block; width: 100%; height: 100%; }
+.url { font-size: 34px; line-height: 1.5; font-weight: 600; word-break: break-all; }
+.url span { display: block; font-size: 28px; color: var(--muted); font-weight: 500; margin-bottom: 10px; word-break: keep-all; }
+.url em { font-style: normal; color: var(--tomato); }
