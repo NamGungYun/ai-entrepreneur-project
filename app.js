@@ -21,6 +21,9 @@ let pollTimer = null;
 let toastTimer = null;
 
 function readNick() {
+  // 화면 캡처와 시연을 위해 주소에 ?nick=닉네임 을 붙이면 첫 화면을 건너뛴다.
+  const fromUrl = (new URLSearchParams(location.search).get("nick") || "").trim().slice(0, 12);
+  if (fromUrl) return fromUrl;
   try { return localStorage.getItem("honbap.nick") || ""; } catch { return ""; }
 }
 function saveNick(n) {
