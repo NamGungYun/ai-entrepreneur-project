@@ -9,7 +9,8 @@
   --accent-soft: #FCE9E1;
   --ok: #2F6B4F;
   --radius: 16px;
-  --font: "Pretendard", system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font: "IBM Plex Sans KR", system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-title: "Paperlogy", "IBM Plex Sans KR", system-ui, sans-serif;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; }
@@ -28,16 +29,25 @@ body {
   padding: 20px 16px calc(96px + env(safe-area-inset-bottom));
 }
 h1, h2, h3, p { margin: 0; }
+h1, h2, .brand, .room .time, .room .menu { font-family: var(--font-title); }
 button, input, select { font: inherit; color: inherit; }
 button { cursor: pointer; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* 첫 화면 */
-.gate { padding-top: 12vh; }
+.gate { padding-top: 6vh; }
 .gate .mark { font-size: 15px; font-weight: 700; color: var(--accent); letter-spacing: 0; }
 .gate h1 { font-size: 40px; line-height: 1.2; font-weight: 800; letter-spacing: -0.02em; margin: 8px 0 12px; }
 .gate h1 em { font-style: normal; color: var(--accent); }
-.gate .lead { color: var(--ink-2); margin-bottom: 32px; }
+.gate .lead { color: var(--ink-2); margin-bottom: 20px; }
+.feats { display: grid; gap: 8px; margin-bottom: 24px; }
+.feat { display: grid; grid-template-columns: 28px 1fr; gap: 10px; align-items: center; text-align: left; width: 100%;
+  min-height: 56px; padding: 10px 14px; background: var(--card); border: 1.5px solid var(--line); border-radius: 12px; }
+.feat .n { font-family: var(--font-title); font-weight: 800; color: var(--accent); }
+.feat b { display: block; line-height: 1.35; }
+.feat small { display: block; color: var(--ink-2); font-size: 13px; line-height: 1.4; }
+.feat[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.proto { margin-top: 28px; font-size: 13px; color: var(--ink-2); text-align: center; }
 .field { display: block; margin-bottom: 16px; }
 .field > span { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
 .field input, .field select {

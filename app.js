@@ -151,7 +151,7 @@ async function reportRoom(roomId) {
   const reason = window.prompt("신고 사유를 적어 주세요. (예: 부적절한 대화, 약속 장소가 공개된 식당이 아님)");
   if (!reason || !reason.trim()) return;
   const { error } = await db.from("reports").insert({ room_id: roomId, reporter: state.nick, reason: reason.trim().slice(0, 200) });
-  toast(error ? "신고를 접수하지 못했어요. 다시 시도해 주세요." : "신고가 접수됐어요. 확인 후 조치할게요.");
+  toast(error ? "신고를 접수하지 못했어요. 다시 시도해 주세요." : "신고가 접수됐어요.");
 }
 
 // ---------- 화면 ----------
@@ -169,6 +169,21 @@ function render() {
 
 function renderGate() {
   let err;
+  let intent = "list";
+  const feats = [
+    ["list", "밥약 방 참여하기", "오늘·내일 열린 방에 버튼 한 번으로"],
+    ["create", "밥약 방 열기", "시간·식당·메뉴·정원을 정해서"],
+    ["list", "방 안에서 채팅하기", "만날 곳과 시간을 실시간으로 조율"],
+  ];
+  const featBtns = feats.map(([to, title, sub], i) => el("button", {
+    class: "feat", type: "button", "aria-pressed": "false",
+    onclick: (e) => {
+      intent = to;
+      featBtns.forEach((b) => b.setAttribute("aria-pressed", "false"));
+      e.currentTarget.setAttribute("aria-pressed", "true");
+      nick.focus();
+    },
+  }, el("span", { class: "n" }, String(i + 1)), el("span", {}, el("b", {}, title), el("small", {}, sub))));
   const nick = el("input", { type: "text", maxlength: "12", autocomplete: "nickname", placeholder: "예: 점심메이트", required: true });
   const adult = el("input", { type: "checkbox", required: true });
   const form = el("form", {
@@ -178,6 +193,7 @@ function renderGate() {
       if (!n) { err.textContent = "닉네임을 입력해 주세요."; return; }
       if (!adult.checked) { err.textContent = "만 19세 이상 확인에 체크해 주세요."; return; }
       state.nick = n; saveNick(n);
+      state.view = intent;
       start();
     },
   },
@@ -189,10 +205,11 @@ function renderGate() {
   app.replaceChildren(el("section", { class: "gate" },
     el("p", { class: "mark" }, "혼밥 탈출"),
     el("h1", {}, "오늘 ", el("em", {}, "같이"), " 먹을", el("br"), "사람 있어요?"),
-    el("p", { class: "lead" }, "언제, 어디서, 무엇을 먹을지 정한 방에 버튼 한 번으로 참여하세요. 3~4명이 함께라 부담이 적어요."),
+    el("p", { class: "lead" }, "혼자 밥 먹기 외로운 사람을 위한 밥약 서비스예요. 언제, 어디서, 무엇을 먹을지 정한 방에 바로 참여하세요."),
+    el("div", { class: "feats" }, featBtns),
     form,
+    el("p", { class: "proto" }, "수업용 시제품 · 목록의 '가상 사용자' 방은 예시 데이터입니다"),
   ));
-  nick.focus();
 }
 
 function topBar() {
