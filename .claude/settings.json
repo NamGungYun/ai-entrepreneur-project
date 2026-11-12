@@ -1,0 +1,57 @@
+{
+  "env": {
+    "DO_NOT_TRACK": "1",
+    "IMPECCABLE_NO_TELEMETRY": "1",
+    "KSKILL_ANALYTICS_DISABLED": "1",
+    "SUPERPOWERS_DISABLE_TELEMETRY": "1"
+  },
+  "enabledPlugins": {
+    "kordoc@kordoc": true,
+    "frontend-design@claude-plugins-official": true,
+    "skill-creator@claude-plugins-official": true,
+    "document-skills@anthropic-agent-skills": true,
+    "korean-law@korean-law-marketplace": true,
+    "humanize-korean@im-not-ai": true,
+    "superpowers@claude-plugins-official": true,
+    "impeccable@impeccable": true,
+    "k-skill@k-skill": true
+  },
+  "extraKnownMarketplaces": {
+    "kordoc": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/chrisryugj/kordoc.git"
+      }
+    },
+    "anthropic-agent-skills": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/anthropics/skills.git"
+      }
+    },
+    "korean-law-marketplace": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/chrisryugj/korean-law-mcp.git"
+      }
+    },
+    "im-not-ai": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/epoko77-ai/im-not-ai.git"
+      }
+    },
+    "impeccable": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/pbakaus/impeccable.git"
+      }
+    },
+    "k-skill": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/NomaDamas/k-skill.git"
+      }
+    }
+  }
+}

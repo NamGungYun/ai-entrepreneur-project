@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1280">
+<title>AI 앙트레프레너 LAUNCH · 행사 일정</title>
+<!-- 16:9 슬라이드 출발점. 1280×720 기준. 다른 폴더로 옮기면 아래 경로 3종(css, motifs, logo)을 함께 옮기거나 인라인한다. -->
+<link rel="stylesheet" href="../launch.css">
+<style>
+  html, body { margin: 0; background: #111A36; }
+  .slide { width: 1280px; height: 720px; overflow: hidden; }
+  .slide > * { position: absolute; }
+  .head-band { left: 84px; top: 46px; transform: rotate(-5deg); }
+  .head-brush { left: 70px; top: 96px; transform: rotate(-5deg); }
+  .head-tape { left: 488px; top: 96px; transform: rotate(-4deg); }
+  .date { right: 56px; top: 44px; }
+  .date .ls-date__day { font-size: 35px; } .date .ls-date__dow { font-size: 25px; padding: 2px 6px; }
+  .date .ls-date__time { font-size: 20px; } .date .ls-date__place { font-size: 13px; gap: 6px; } .date .ls-date__place svg { width: 15px; height: 15px; }
+  .date.ls-date { gap: 4px; }
+  .panels { left: 56px; right: 56px; top: 192px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+  .tags { left: 702px; top: 590px; transform: rotate(-6deg) scale(.6); transform-origin: left top; }
+  .foot { left: 56px; right: 56px; bottom: 18px; display: flex; justify-content: space-between; align-items: center; font-size: 16px; font-weight: 700; }
+  .foot span { color: var(--text-secondary); font-size: 14px; font-weight: 500; margin-right: 12px; }
+  .foot img { height: 16px; vertical-align: -2px; }
+</style>
+</head>
+<body>
+<main class="slide ls-bg" data-mode="launch">
+  <!-- 장식: 모서리에만, 반시계 회전만 -->
+  <img class="ls-deco" src="../motifs/pixel-checker.svg" alt="" aria-hidden="true" style="left:0;top:20px;width:72px">
+  <img class="ls-deco" src="../motifs/crown.svg" alt="" aria-hidden="true" style="left:104px;top:8px;width:56px;transform:rotate(-10deg)">
+  <img class="ls-deco" src="../motifs/sparkle.svg" alt="" aria-hidden="true" style="left:700px;top:42px;width:32px">
+  <img class="ls-deco" src="../motifs/sparkle.svg" alt="" aria-hidden="true" style="left:742px;top:74px;width:18px">
+  <img class="ls-deco" src="../motifs/ellipse-ring.svg" alt="" aria-hidden="true" style="left:1030px;top:582px;width:130px">
+  <img class="ls-deco" src="../motifs/pixel-checker.svg" alt="" aria-hidden="true" style="left:1208px;top:578px;width:72px">
+
+  <!-- 머리: 띠 제목 → 브러시 단어(겹침) → 테이프 -->
+  <div class="head-brush ls-brush ls-brush--md" aria-hidden="true">LAUNCH!</div>
+  <h1 class="head-band ls-band ls-band--md">AI 앙트레프레너</h1>
+  <p class="head-tape ls-tape" style="margin:0"><b>행사</b> 일정</p>
+
+  <div class="date ls-date">
+    <div class="ls-date__day">2026.11.12 <span class="ls-date__dow">THU</span></div>
+    <div class="ls-date__time">10:00–17:00</div>
+    <div class="ls-date__place"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21zM12 12a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/></svg>S관 나무계단 및 라운지</div>
+  </div>
+
+  <!-- 본문: 패널 두 장. is-rest = 등록·점심·휴식, 차시는 라임 배지 -->
+  <div class="panels">
+    <section class="ls-panel">
+      <div class="ls-panel__head"><h2 class="ls-panel__title">오전</h2><span class="ls-label">09:30 – 13:10</span></div>
+      <ol class="ls-schedule">
+        <li class="is-rest"><time>09:30</time>등록</li>
+        <li><time>10:00</time>개회사</li>
+        <li><time>10:10</time>행사 안내 및 강사 소개</li>
+        <li><time>10:20</time>이중훈 대표 자기소개</li>
+        <li><time>10:30</time><span class="ls-badge ls-badge--accent">1강</span>점검(사전과제)</li>
+        <li><time>11:00</time><span class="ls-badge ls-badge--accent">2강</span>Claude Code, Skill, MCP, 하네스</li>
+        <li><time>11:40</time><span class="ls-badge ls-badge--accent">3강</span>GitHub 및 슈파베이스 가입 및 설치</li>
+        <li><time>12:00</time><span class="ls-badge ls-badge--accent">4강</span>시장조사 및 기획서 작성</li>
+        <li class="is-rest"><time>12:30</time>점심</li>
+      </ol>
+    </section>
+    <section class="ls-panel">
+      <div class="ls-panel__head"><h2 class="ls-panel__title">오후</h2><span class="ls-label">13:10 – 17:00</span></div>
+      <ol class="ls-schedule">
+        <li><time>13:10</time>멘토 소개</li>
+        <li><time>13:20</time>AI 활용 원포인트 강의 by 멘토</li>
+        <li><time>13:50</time><span class="ls-badge ls-badge--accent">5강</span>구현과 GitHub 배포</li>
+        <li><time>14:50</time><span class="ls-badge ls-badge--accent">6강</span>SNS 크리에이티브 작성 및 발표 준비</li>
+        <li><time>15:10</time>조별 시연과 심사</li>
+        <li class="is-rest"><time>16:40</time>심사 계산(휴식, 자리 정리)</li>
+        <li><time>16:50</time>시상식</li>
+      </ol>
+    </section>
+  </div>
+
+  <div class="tags ls-tags" aria-hidden="true"><span>IDEA</span><span>TO</span><span>PRODUCT</span></div>
+
+  <footer class="foot">
+    <div><span>주최</span>삼육보건대학교 AI 앙트레프레너 센터</div>
+    <div><span>주관</span><img src="../logo/wordmark-en-white.svg" alt="메이저맵"></div>
+  </footer>
+</main>
+</body>
+</html>
